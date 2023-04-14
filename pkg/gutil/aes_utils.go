@@ -1,4 +1,4 @@
-package util
+package gutil
 
 import (
 	"bytes"
@@ -6,9 +6,6 @@ import (
 	"crypto/cipher"
 )
 
-// =================== AES/ECB/PKCS5Padding ==================================================================
-// =================== AES/ECB/PKCS5Padding ==================================================================
-// =================== AES/ECB/PKCS5Padding ==================================================================
 func pkcs5Padding(ciphertext []byte, blockSize int) []byte {
 	padding := blockSize - len(ciphertext)%blockSize
 	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
@@ -21,7 +18,14 @@ func pkcs5UnPadding(src []byte) []byte {
 	return src[:length-paddingNum]
 }
 
-// aes 加密
+//
+// AesEncryptOfECBWithPKCS5Padding
+//  @Description: aes 加密
+//  @param key
+//  @param origData
+//  @return []byte
+//  @return error
+//
 func AesEncryptOfECBWithPKCS5Padding(key []byte, origData []byte) ([]byte, error) {
 	//key只能是 16 24 32长度
 	block, err := aes.NewCipher(key)
@@ -41,7 +45,14 @@ func AesEncryptOfECBWithPKCS5Padding(key []byte, origData []byte) ([]byte, error
 	return buffer.Bytes(), nil
 }
 
-// aes解密
+//
+// AesDecryptOfECBWithPKCS5Padding
+//  @Description: aes解密
+//  @param key
+//  @param origData
+//  @return []byte
+//  @return error
+//
 func AesDecryptOfECBWithPKCS5Padding(key []byte, origData []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
@@ -56,10 +67,15 @@ func AesDecryptOfECBWithPKCS5Padding(key []byte, origData []byte) ([]byte, error
 	return pkcs5UnPadding(buffer.Bytes()), nil
 }
 
-// =================== AES/GCM/NoPadding ==================================================================
-// =================== AES/GCM/NoPadding ==================================================================
-// =================== AES/GCM/NoPadding ==================================================================
-// aes 加密
+//
+// AesEncryptOfGCMWithNoPadding
+//  @Description: aes 加密
+//  @param key
+//  @param nonce
+//  @param origData
+//  @return []byte
+//  @return error
+//
 func AesEncryptOfGCMWithNoPadding(key []byte, nonce []byte, origData []byte) ([]byte, error) {
 	// key只能是 16 24 32长度
 	block, err := aes.NewCipher(key)
@@ -74,7 +90,15 @@ func AesEncryptOfGCMWithNoPadding(key []byte, nonce []byte, origData []byte) ([]
 	return gcm.Seal(nil, nonce, origData, nil), nil
 }
 
-// aes解密
+//
+// AesDecryptOfGCMWithNoPadding
+//  @Description: aes解密
+//  @param key
+//  @param nonce
+//  @param ciphertext
+//  @return []byte
+//  @return error
+//
 func AesDecryptOfGCMWithNoPadding(key []byte, nonce []byte, ciphertext []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
