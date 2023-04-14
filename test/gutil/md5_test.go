@@ -8,7 +8,7 @@ package gutil
 
 import (
 	"fmt"
-	util "frameundulate.com/gcommon/pkg/gutil"
+	util "github.com/frameundulate/gcommon/pkg/gutil"
 	"testing"
 )
 
