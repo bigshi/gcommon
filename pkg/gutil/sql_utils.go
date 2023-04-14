@@ -7,9 +7,6 @@ import (
 	"strings"
 )
 
-const Limit string = "limit"
-const Offset string = "offset"
-
 //
 // GetWhereSql
 //  @Description: 获取where
@@ -64,8 +61,8 @@ func GetLimitSql(limitMap map[string]int32) string {
 	if limitMap == nil || len(limitMap) == 0 {
 		return ""
 	}
-	limit, limitOk := limitMap[Limit]
-	offset, offsetOk := limitMap[Offset]
+	limit, limitOk := limitMap[gmodel.Limit]
+	offset, offsetOk := limitMap[gmodel.Offset]
 	if limitOk && offsetOk {
 		return fmt.Sprintf("limit %d offset %d", limit, offset)
 	}
