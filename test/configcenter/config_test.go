@@ -8,16 +8,22 @@ package configcenter
 
 import (
 	"fmt"
+	"github.com/golang/glog"
 	"github.com/qionggemens/gcommon/pkg/configcenter"
-	"os"
 	"testing"
+	"time"
 )
 
-func TestMd5(t *testing.T) {
-	os.Setenv("NACOS_IP", "192.168.88.42")
-	err := configcenter.LoadYamlConfig("", "messaging.yaml")
-	fmt.Println(err)
+func TestGetBool(t *testing.T) {
 	fmt.Println(configcenter.GetBool("jwt.check.enabled"))
-	fmt.Println(configcenter.GetString("jwt.secret.app"))
+}
 
+func TestGetString(t *testing.T) {
+	fmt.Println(configcenter.GetString("jwt.secret.app"))
+}
+
+func TestGetStrList(t *testing.T) {
+	fmt.Println(configcenter.GetStrList("spring.redis.cluster.nodes"))
+	glog.Flush()
+	time.Sleep(30 * time.Second)
 }
