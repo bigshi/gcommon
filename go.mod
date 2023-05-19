@@ -1,6 +1,6 @@
 module github.com/qionggemens/gcommon
 
-go 1.18
+go 1.19
 
 require (
 	github.com/nacos-group/nacos-sdk-go/v2 v2.2.2
