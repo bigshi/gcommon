@@ -1,3 +1,3 @@
-module github.com/kulebai/gcommon
+module github.com/qionggemens/gcommon
 
 go 1.18
