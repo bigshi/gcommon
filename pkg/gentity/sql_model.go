@@ -1,4 +1,4 @@
-package gmodel
+package gentity
 
 const SelectSQLTemplate = "select %s from %s.%s %s %s" //  1-字段，2-库名，3-表名，4-where，5-limit
 

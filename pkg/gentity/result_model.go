@@ -1,4 +1,4 @@
-package gmodel
+package gentity
 
 import (
 	"encoding/json"

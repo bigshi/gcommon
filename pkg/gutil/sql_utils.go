@@ -3,18 +3,17 @@ package gutil
 import (
 	"database/sql"
 	"fmt"
-	"github.com/frameundulate/gcommon/pkg/gmodel"
+	"github.com/qionggemens/gcommon/pkg/gentity"
 	"strings"
 )
 
-//
 // GetWhereSql
-//  @Description: 获取where
-//  @param queryList
-//  @return string
-//  @return []interface{}
 //
-func GetWhereSql(queryList []gmodel.QueryCondition) (string, []interface{}) {
+//	@Description: 获取where
+//	@param queryList
+//	@return string
+//	@return []interface{}
+func GetWhereSql(queryList []gentity.QueryCondition) (string, []interface{}) {
 	var ands = make([]string, 0)
 	var values = make([]interface{}, 0)
 
@@ -30,12 +29,11 @@ func GetWhereSql(queryList []gmodel.QueryCondition) (string, []interface{}) {
 	return strings.Join(ands, " and "), values
 }
 
-//
 // GetOrderSql
-//  @Description: 获取order
-//  @param orderMap
-//  @return string
 //
+//	@Description: 获取order
+//	@param orderMap
+//	@return string
 func GetOrderSql(orderMap map[string]bool) string {
 	if orderMap == nil || len(orderMap) == 0 {
 		return ""
@@ -51,18 +49,17 @@ func GetOrderSql(orderMap map[string]bool) string {
 	return fmt.Sprintf("order by %s", strings.Join(orderBys, ","))
 }
 
-//
 // GetLimitSql
-//  @Description: 获取limit
-//  @param limitMap
-//  @return string
 //
+//	@Description: 获取limit
+//	@param limitMap
+//	@return string
 func GetLimitSql(limitMap map[string]int32) string {
 	if limitMap == nil || len(limitMap) == 0 {
 		return ""
 	}
-	limit, limitOk := limitMap[gmodel.Limit]
-	offset, offsetOk := limitMap[gmodel.Offset]
+	limit, limitOk := limitMap[gentity.Limit]
+	offset, offsetOk := limitMap[gentity.Offset]
 	if limitOk && offsetOk {
 		return fmt.Sprintf("limit %d offset %d", limit, offset)
 	}
@@ -72,15 +69,14 @@ func GetLimitSql(limitMap map[string]int32) string {
 	return ""
 }
 
-//
 // Insert
-//  @Description: 新增
-//  @param db
-//  @param sql
-//  @param args
-//  @return err
-//  @return id
 //
+//	@Description: 新增
+//	@param db
+//	@param sql
+//	@param args
+//	@return err
+//	@return id
 func Insert(db *sql.DB, sql string, args ...interface{}) (err error, id int64) {
 	result, err := db.Exec(sql, args...)
 	if err != nil {
@@ -93,15 +89,14 @@ func Insert(db *sql.DB, sql string, args ...interface{}) (err error, id int64) {
 	return nil, insertId
 }
 
-//
 // InsertByTx
-//  @Description: 新增-事务
-//  @param tx
-//  @param sql
-//  @param args
-//  @return err
-//  @return id
 //
+//	@Description: 新增-事务
+//	@param tx
+//	@param sql
+//	@param args
+//	@return err
+//	@return id
 func InsertByTx(tx *sql.Tx, sql string, args ...interface{}) (err error, id int64) {
 	result, err := tx.Exec(sql, args...)
 	if err != nil {
@@ -114,15 +109,14 @@ func InsertByTx(tx *sql.Tx, sql string, args ...interface{}) (err error, id int6
 	return nil, insertId
 }
 
-//
 // Modify
-//  @Description: 修改（编辑、删除）
-//  @param db
-//  @param sql
-//  @param args
-//  @return err
-//  @return id
 //
+//	@Description: 修改（编辑、删除）
+//	@param db
+//	@param sql
+//	@param args
+//	@return err
+//	@return id
 func Modify(db *sql.DB, sql string, args ...interface{}) (err error, id int64) {
 	result, err := db.Exec(sql, args...)
 	if err != nil {
@@ -135,15 +129,14 @@ func Modify(db *sql.DB, sql string, args ...interface{}) (err error, id int64) {
 	return nil, affectedRows
 }
 
-//
 // ModifyTx
-//  @Description: 修改（编辑、删除）- 事务
-//  @param tx
-//  @param sql
-//  @param args
-//  @return err
-//  @return id
 //
+//	@Description: 修改（编辑、删除）- 事务
+//	@param tx
+//	@param sql
+//	@param args
+//	@return err
+//	@return id
 func ModifyTx(tx *sql.Tx, sql string, args ...interface{}) (err error, id int64) {
 	result, err := tx.Exec(sql, args...)
 	if err != nil {

@@ -4,7 +4,7 @@
  * Email: lcmusic1994@gmail.com
  */
 
-package gmodel
+package gentity
 
 type ApiException struct {
 	Code int32
