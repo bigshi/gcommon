@@ -15,11 +15,11 @@ import (
 )
 
 func TestGetBool(t *testing.T) {
-	fmt.Println(configcenter.GetBool("jwt.check.enabled"))
+	fmt.Println(configcenter.GetBool("jwt.check.enabled", false))
 }
 
 func TestGetString(t *testing.T) {
-	fmt.Println(configcenter.GetString("jwt.secret.app"))
+	fmt.Println(configcenter.GetString("jwt.secret.app", ""))
 }
 
 func TestGetStrList(t *testing.T) {

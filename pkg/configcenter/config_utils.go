@@ -16,16 +16,16 @@ import (
 //	@Description: 获取bool值
 //	@param key
 //	@return bool
-func GetBool(key string) bool {
+func GetBool(key string, defValue bool) bool {
 	value, ok := configMap[key]
 	if !ok {
-		return false
+		return defValue
 	}
 	val, isOk := value.(bool)
 	if isOk {
 		return val
 	}
-	return false
+	return defValue
 }
 
 // GetString
@@ -33,16 +33,16 @@ func GetBool(key string) bool {
 //	@Description: 获取字符串值
 //	@param key
 //	@return string
-func GetString(key string) string {
+func GetString(key string, defValue string) string {
 	value, isOk := configMap[key]
 	if !isOk {
-		return ""
+		return defValue
 	}
 	val, isOk := value.(string)
 	if isOk {
 		return val
 	}
-	return ""
+	return defValue
 }
 
 // GetStrList
@@ -75,16 +75,16 @@ func GetStrList(key string) []string {
 //	@Description:
 //	@param key
 //	@return int
-func GetInt(key string) int {
+func GetInt(key string, defValue int) int {
 	value, isOk := configMap[key]
 	if !isOk {
-		return 0
+		return defValue
 	}
 	val, isOk := value.(int)
 	if isOk {
 		return val
 	}
-	return 0
+	return defValue
 }
 
 // GetInt32
@@ -92,16 +92,16 @@ func GetInt(key string) int {
 //	@Description:
 //	@param key
 //	@return int32
-func GetInt32(key string) int32 {
+func GetInt32(key string, defValue int32) int32 {
 	value, isOk := configMap[key]
 	if !isOk {
-		return 0
+		return defValue
 	}
 	val, isOk := value.(int32)
 	if isOk {
 		return val
 	}
-	return 0
+	return defValue
 }
 
 // GetInt64
@@ -109,14 +109,14 @@ func GetInt32(key string) int32 {
 //	@Description:
 //	@param key
 //	@return int64
-func GetInt64(key string) int64 {
+func GetInt64(key string, defValue int64) int64 {
 	value, isOk := configMap[key]
 	if !isOk {
-		return 0
+		return defValue
 	}
 	val, isOk := value.(int64)
 	if isOk {
 		return val
 	}
-	return 0
+	return defValue
 }
