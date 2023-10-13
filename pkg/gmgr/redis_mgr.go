@@ -4,7 +4,7 @@
  * Email: lcmusic1994@gmail.com
  */
 
-package mgr
+package gmgr
 
 import (
 	"github.com/qionggemens/gcommon/pkg/configcenter"
