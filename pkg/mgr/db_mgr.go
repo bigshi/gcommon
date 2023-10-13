@@ -9,16 +9,17 @@ package mgr
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/golang/glog"
 	"github.com/qionggemens/gcommon/pkg/configcenter"
 	"time"
 )
 
 func NewDB(tbName string) (*sql.DB, error) {
-	mysqlUrl := configcenter.GetString("db.url."+tbName, "")
-	maxOpenConns := configcenter.GetInt("db.max.open_conns", 10)
-	minIdleConns := configcenter.GetInt("db.min.idle_conns", 2)
-	maxLifeTime := configcenter.GetInt64("db.max.life_time", 60)
+	mysqlUrl := configcenter.GetString(fmt.Sprintf("db.%s.mysql_url", tbName), "")
+	maxOpenConns := configcenter.GetInt(fmt.Sprintf("db.%s.max_open_conns", tbName), 10)
+	minIdleConns := configcenter.GetInt(fmt.Sprintf("db.%s.min_idle_conns", tbName), 2)
+	maxLifeTime := configcenter.GetInt64(fmt.Sprintf("db.%s.max_life_time", tbName), 60)
 
 	if mysqlUrl == "" {
 		glog.Errorf("InitDB fail - msg:mysqlUrl is empty")
