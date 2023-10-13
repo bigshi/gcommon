@@ -15,11 +15,11 @@ import (
 	"time"
 )
 
-func NewDB(tbName string) (*sql.DB, error) {
-	mysqlUrl := configcenter.GetString(fmt.Sprintf("db.%s.mysql_url", tbName), "")
-	maxOpenConns := configcenter.GetInt(fmt.Sprintf("db.%s.max_open_conns", tbName), 10)
-	minIdleConns := configcenter.GetInt(fmt.Sprintf("db.%s.min_idle_conns", tbName), 2)
-	maxLifeTime := configcenter.GetInt64(fmt.Sprintf("db.%s.max_life_time", tbName), 60)
+func NewDB(dbName string) (*sql.DB, error) {
+	mysqlUrl := configcenter.GetString(fmt.Sprintf("db.%s.mysql_url", dbName), "")
+	maxOpenConns := configcenter.GetInt(fmt.Sprintf("db.%s.max_open_conns", dbName), 10)
+	minIdleConns := configcenter.GetInt(fmt.Sprintf("db.%s.min_idle_conns", dbName), 2)
+	maxLifeTime := configcenter.GetInt64(fmt.Sprintf("db.%s.max_life_time", dbName), 60)
 
 	if mysqlUrl == "" {
 		glog.Errorf("InitDB fail - msg:mysqlUrl is empty")
