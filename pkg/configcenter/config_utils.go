@@ -11,12 +11,11 @@ import (
 	"strconv"
 )
 
-//
 // GetBool
-//  @Description: 获取bool值
-//  @param key
-//  @return bool
 //
+//	@Description: 获取bool值
+//	@param key
+//	@return bool
 func GetBool(key string) bool {
 	value, ok := configMap[key]
 	if !ok {
@@ -29,12 +28,11 @@ func GetBool(key string) bool {
 	return false
 }
 
-//
 // GetString
-//  @Description: 获取字符串值
-//  @param key
-//  @return string
 //
+//	@Description: 获取字符串值
+//	@param key
+//	@return string
 func GetString(key string) string {
 	value, isOk := configMap[key]
 	if !isOk {
@@ -47,12 +45,11 @@ func GetString(key string) string {
 	return ""
 }
 
-//
 // GetStrList
-//  @Description: 获取字符串数组
-//  @param key
-//  @return []string
 //
+//	@Description: 获取字符串数组
+//	@param key
+//	@return []string
 func GetStrList(key string) []string {
 	result := make([]string, 0)
 	i := int64(0)
@@ -71,4 +68,55 @@ func GetStrList(key string) []string {
 		i++
 	}
 	return result
+}
+
+// GetInt
+//
+//	@Description:
+//	@param key
+//	@return int
+func GetInt(key string) int {
+	value, isOk := configMap[key]
+	if !isOk {
+		return 0
+	}
+	val, isOk := value.(int)
+	if isOk {
+		return val
+	}
+	return 0
+}
+
+// GetInt32
+//
+//	@Description:
+//	@param key
+//	@return int32
+func GetInt32(key string) int32 {
+	value, isOk := configMap[key]
+	if !isOk {
+		return 0
+	}
+	val, isOk := value.(int32)
+	if isOk {
+		return val
+	}
+	return 0
+}
+
+// GetInt64
+//
+//	@Description:
+//	@param key
+//	@return int64
+func GetInt64(key string) int64 {
+	value, isOk := configMap[key]
+	if !isOk {
+		return 0
+	}
+	val, isOk := value.(int64)
+	if isOk {
+		return val
+	}
+	return 0
 }
