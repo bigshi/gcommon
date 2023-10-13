@@ -14,8 +14,8 @@ import (
 	"time"
 )
 
-func NewDB() (*sql.DB, error) {
-	mysqlUrl := configcenter.GetString("db.url", "")
+func NewDB(tbName string) (*sql.DB, error) {
+	mysqlUrl := configcenter.GetString("db.url."+tbName, "")
 	maxOpenConns := configcenter.GetInt("db.max.open_conns", 10)
 	minIdleConns := configcenter.GetInt("db.min.idle_conns", 2)
 	maxLifeTime := configcenter.GetInt64("db.max.life_time", 60)
