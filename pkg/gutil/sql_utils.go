@@ -16,6 +16,9 @@ import (
 func GetWhereSql(queryList []gentity.QueryCondition) (string, []interface{}) {
 	var ands = make([]string, 0)
 	var values = make([]interface{}, 0)
+	if queryList == nil || len(queryList) == 0 {
+		return "", values
+	}
 
 	for _, query := range queryList {
 		k := query.QueryKey
@@ -26,7 +29,7 @@ func GetWhereSql(queryList []gentity.QueryCondition) (string, []interface{}) {
 		}
 		values = append(values, v)
 	}
-	return strings.Join(ands, " and "), values
+	return fmt.Sprintf("where %s", strings.Join(ands, " and ")), values
 }
 
 // GetOrderSql
@@ -107,4 +110,21 @@ func ModifyTx(tx *sql.Tx, sql string, args ...interface{}) (err error, id int64)
 		return err, 0
 	}
 	return nil, affectedRows
+}
+
+// GetSelectSql
+//
+//	@Description: 获取查询sql
+//	@param dbName
+//	@param tbName
+//	@param selectFieldStr
+//	@param queryList
+//	@param orderMap
+//	@param limitMap
+//	@return string
+//	@return []interface{}
+func GetSelectSql(dbName string, tbName string, selectFieldStr string, queryList []gentity.QueryCondition, orderMap map[string]bool, limitMap map[string]int32) (string, []interface{}) {
+	whereSql, whereValues := GetWhereSql(queryList)
+	selectSql := fmt.Sprintf(gentity.SelectSQLTemplate, selectFieldStr, dbName, tbName, whereSql, GetOrderSql(orderMap), GetLimitSql(limitMap))
+	return strings.Trim(selectSql, " "), whereValues
 }
