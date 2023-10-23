@@ -69,46 +69,6 @@ func GetLimitSql(limitMap map[string]int32) string {
 	return ""
 }
 
-// Insert
-//
-//	@Description: 新增
-//	@param db
-//	@param sql
-//	@param args
-//	@return err
-//	@return id
-func Insert(db *sql.DB, sql string, args ...interface{}) (err error, id int64) {
-	result, err := db.Exec(sql, args...)
-	if err != nil {
-		return err, 0
-	}
-	insertId, err := result.LastInsertId()
-	if err != nil {
-		return err, 0
-	}
-	return nil, insertId
-}
-
-// InsertByTx
-//
-//	@Description: 新增-事务
-//	@param tx
-//	@param sql
-//	@param args
-//	@return err
-//	@return id
-func InsertByTx(tx *sql.Tx, sql string, args ...interface{}) (err error, id int64) {
-	result, err := tx.Exec(sql, args...)
-	if err != nil {
-		return err, 0
-	}
-	insertId, err := result.LastInsertId()
-	if err != nil {
-		return err, 0
-	}
-	return nil, insertId
-}
-
 // Modify
 //
 //	@Description: 修改（编辑、删除）
