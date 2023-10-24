@@ -10,6 +10,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/go-sql-driver/mysql"
 	"github.com/golang/glog"
 	"github.com/qionggemens/gcommon/pkg/configcenter"
 	"time"
@@ -25,6 +26,7 @@ func NewDB(dbName string) (*sql.DB, error) {
 		glog.Errorf("InitDB fail - msg:mysqlUrl is empty")
 		return nil, errors.New("InitDB fail")
 	}
+	sql.Register("mysql", mysql.MySQLDriver{})
 	db, err := sql.Open("mysql", mysqlUrl)
 	if err != nil {
 		glog.Errorf("InitDB fail - msg:%s", err.Error())
