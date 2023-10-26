@@ -13,8 +13,8 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/v2/clients/config_client"
 	"github.com/nacos-group/nacos-sdk-go/v2/common/constant"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
+	"github.com/qionggemens/gcommon/pkg/gutil"
 	"gopkg.in/yaml.v2"
-	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -52,13 +52,12 @@ func LoadYamlConfig(namespaceId string, dataId string) error {
 	return nil
 }
 
-//
 // getClientConfig
-//  @Description: 获取客户端配置
-//  @param namespaceId
-//  @param moduleId
-//  @return *constant.ClientConfig
 //
+//	@Description: 获取客户端配置
+//	@param namespaceId
+//	@param moduleId
+//	@return *constant.ClientConfig
 func getClientConfig(namespaceId string, dataId string) *constant.ClientConfig {
 	logDir := fmt.Sprintf("/tmp/nacos/log/%s/%s", namespaceId, dataId)
 	cacheDir := fmt.Sprintf("/tmp/nacos/cache/%s/%s", namespaceId, dataId)
@@ -72,33 +71,25 @@ func getClientConfig(namespaceId string, dataId string) *constant.ClientConfig {
 	)
 }
 
-//
 // getServerConfig
-//  @Description: 获取服务端配置
-//  @return []constant.ServerConfig
 //
+//	@Description: 获取服务端配置
+//	@return []constant.ServerConfig
 func getServerConfig() []constant.ServerConfig {
-	nacosIp := os.Getenv("NACOS_IP")
-	nacosPort := os.Getenv("NACOS_PORT")
-	if nacosIp == "" {
-		nacosIp = "qionggemen.nacos.net"
-	}
-	if nacosPort == "" {
-		nacosPort = "8848"
-	}
-	port, _ := strconv.ParseUint(nacosPort, 10, 64)
+	nacosAddr := gutil.GetNacosAddr()
+	addr := strings.Split(nacosAddr, ":")
+	port, _ := strconv.ParseUint(addr[1], 10, 64)
 	return []constant.ServerConfig{
-		*constant.NewServerConfig(nacosIp, port, constant.WithContextPath("/nacos")),
+		*constant.NewServerConfig(addr[0], port, constant.WithContextPath("/nacos")),
 	}
 }
 
-//
 // initConfigClient
-//  @Description: 初始化nacos客户端
-//  @param namespaceId
-//  @param moduleId
-//  @return error
 //
+//	@Description: 初始化nacos客户端
+//	@param namespaceId
+//	@param moduleId
+//	@return error
 func initConfigClient(namespaceId string, dataId string) error {
 	cc := getClientConfig(namespaceId, dataId)
 	sc := getServerConfig()
@@ -115,13 +106,12 @@ func initConfigClient(namespaceId string, dataId string) error {
 	return nil
 }
 
-//
 // buildFlattenedMap
-//  @Description: Spring 原生转换
-//  @param result
-//  @param source
-//  @param path
 //
+//	@Description: Spring 原生转换
+//	@param result
+//	@param source
+//	@param path
 func buildFlattenedMap(result map[string]interface{}, source map[string]interface{}, path string) {
 	for k, v := range source {
 		if len(path) != 0 && path != "" {
