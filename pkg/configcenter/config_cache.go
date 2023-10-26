@@ -80,7 +80,7 @@ func getServerConfig() []constant.ServerConfig {
 	addr := strings.Split(nacosAddr, ":")
 	port, _ := strconv.ParseUint(addr[1], 10, 64)
 	return []constant.ServerConfig{
-		*constant.NewServerConfig(addr[0], port, constant.WithContextPath("/nacos")),
+		*constant.NewServerConfig(addr[0], port),
 	}
 }
 
