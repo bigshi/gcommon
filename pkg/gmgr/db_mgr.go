@@ -32,6 +32,7 @@ func NewDB(dbName string) (*sql.DB, error) {
 		glog.Errorf("InitDB fail - msg:%s", err.Error())
 		return nil, errors.New("InitDB fail")
 	}
+
 	db.SetMaxOpenConns(maxOpenConns)
 	db.SetMaxIdleConns(minIdleConns)
 	db.SetConnMaxLifetime(time.Duration(maxLifeTime) * time.Second)
