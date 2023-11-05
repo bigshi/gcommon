@@ -11,8 +11,8 @@ import (
 	"errors"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/golang/glog"
 	"github.com/qionggemens/gcommon/pkg/configcenter"
+	"github.com/qionggemens/gcommon/pkg/glog"
 	"time"
 )
 

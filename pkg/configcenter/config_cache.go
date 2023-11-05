@@ -8,11 +8,11 @@ package configcenter
 
 import (
 	"fmt"
-	"github.com/golang/glog"
 	"github.com/nacos-group/nacos-sdk-go/v2/clients"
 	"github.com/nacos-group/nacos-sdk-go/v2/clients/config_client"
 	"github.com/nacos-group/nacos-sdk-go/v2/common/constant"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
+	"github.com/qionggemens/gcommon/pkg/glog"
 	"github.com/qionggemens/gcommon/pkg/gutil"
 	"gopkg.in/yaml.v2"
 	"reflect"
@@ -45,7 +45,7 @@ func LoadYamlConfig(namespaceId string, dataId string) error {
 		return err
 	}
 	buildFlattenedMap(configMap, confMap, "")
-	.Infof("-------------------------- nacos config --------------------------")
+	glog.Infof("-------------------------- nacos config --------------------------")
 	for k, v := range configMap {
 		glog.Infof("---  %s: %v", k, v)
 	}
