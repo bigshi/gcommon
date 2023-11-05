@@ -45,7 +45,7 @@ func LoadYamlConfig(namespaceId string, dataId string) error {
 		return err
 	}
 	buildFlattenedMap(configMap, confMap, "")
-	glog.Infoln("-------------------------- nacos config --------------------------")
+	.Infof("-------------------------- nacos config --------------------------")
 	for k, v := range configMap {
 		glog.Infof("---  %s: %v", k, v)
 	}
