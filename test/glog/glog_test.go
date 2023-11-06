@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/qionggemens/gcommon/pkg/glog"
 	"testing"
+	"time"
 )
 
 func TestGetBool(t *testing.T) {
@@ -20,5 +21,6 @@ func TestGetBool(t *testing.T) {
 		return
 	}
 	glog.Infof("dsafdaf")
-	//glog.Flush()
+	glog.Flush()
+	time.Sleep(3 * time.Second)
 }

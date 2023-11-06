@@ -195,7 +195,7 @@ func textPrintf(m *Meta, textSinks []Text, format string, args ...any) (n int, e
 		buf.Reset()
 	}
 
-	// Lmmdd hh:mm:ss.uuuuuu PID/GID file:line]
+	// [INFO yyyy-mm-dd hh:mm:ss.uuu PID/GID file:line]
 	//
 	// The "PID" entry arguably ought to be TID for consistency with other
 	// environments, but TID is not meaningful in a Go program due to the
@@ -203,26 +203,16 @@ func textPrintf(m *Meta, textSinks []Text, format string, args ...any) (n int, e
 	//
 	// Avoid Fprintf, for speed. The format is so simple that we can do it quickly by hand.
 	// It's worth about 3X. Fprintf is hard.
-	const severityChar = "IWEF"
-	buf.WriteByte(severityChar[m.Severity])
-
-	_, month, day := m.Time.Date()
-	hour, minute, second := m.Time.Clock()
-	twoDigits(buf, int(month))
-	twoDigits(buf, day)
-	buf.WriteByte(' ')
-	twoDigits(buf, hour)
-	buf.WriteByte(':')
-	twoDigits(buf, minute)
-	buf.WriteByte(':')
-	twoDigits(buf, second)
+	buf.WriteString(m.Time.Format("2006-01-02 15:04:05"))
 	buf.WriteByte('.')
-	nDigits(buf, 6, uint64(m.Time.Nanosecond()/1000), '0')
-	buf.WriteByte(' ')
+	nDigits(buf, 3, uint64(m.Time.Nanosecond()/1000000), '0')
+	buf.WriteString(" | ")
+
+	buf.WriteString(m.Severity.String())
+	buf.WriteString(" | ")
 
 	nDigits(buf, 7, uint64(m.Thread), ' ')
-	buf.WriteByte(' ')
-
+	buf.WriteString(" | ")
 	{
 		file := m.File
 		if i := strings.LastIndex(file, "/"); i >= 0 {
@@ -236,8 +226,7 @@ func textPrintf(m *Meta, textSinks []Text, format string, args ...any) (n int, e
 		var tmp [19]byte
 		buf.Write(strconv.AppendInt(tmp[:0], int64(m.Line), 10))
 	}
-	buf.WriteString("] ")
-
+	buf.WriteString(" | ")
 	msgStart := buf.Len()
 	fmt.Fprintf(buf, format, args...)
 	if buf.Len() > MaxLogMessageLen-1 {
