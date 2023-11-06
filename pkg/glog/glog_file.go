@@ -204,7 +204,7 @@ func (s *fileSink) Emit(m *logsink.Meta, data []byte) (n int, err error) {
 		}
 	}
 	n = len(data)
-	if int(m.Severity) > *logBufLevel {
+	if int(m.Severity) >= *logBufLevel {
 		select {
 		case s.flushChan <- m.Severity:
 		default:
