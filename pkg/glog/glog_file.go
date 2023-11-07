@@ -28,6 +28,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -58,6 +59,7 @@ var (
 )
 
 func init() {
+	logPath = "/tmp/" + strconv.Itoa(pid)
 	h, err := os.Hostname()
 	if err == nil {
 		host = shortHostname(h)
