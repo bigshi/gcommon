@@ -45,7 +45,6 @@ var (
 func SetLogPath(path string) error {
 	logPath = path
 	if !ExistPath(path) {
-
 		return os.MkdirAll(path, os.ModePerm)
 	}
 	return nil
@@ -140,7 +139,7 @@ func init() {
 	// the log will have gone somewhere.
 	logsink.TextSinks = append(logsink.TextSinks, &sinks.stderr, &sinks.file)
 
-	sinks.file.flushChan = make(chan logsink.Severity, 1)
+	sinks.file.flushChan = make(chan logsink.Severity, channelCap)
 	go sinks.file.flushDaemon()
 }
 
@@ -204,13 +203,9 @@ func (s *fileSink) Emit(m *logsink.Meta, data []byte) (n int, err error) {
 		}
 	}
 	n = len(data)
-	if int(m.Severity) >= *logBufLevel {
-		select {
-		case s.flushChan <- m.Severity:
-		default:
-		}
+	if len(s.flushChan) < channelLen {
+		s.flushChan <- m.Severity
 	}
-
 	return n, err
 }
 
@@ -321,19 +316,44 @@ func (s *fileSink) createMissingFiles(upTo logsink.Severity) error {
 	return nil
 }
 
+const channelCap = 16
+const channelLen = 8
+const channelLimit = 4
+
 // flushDaemon periodically flushes the log file buffers.
+// Small quantity synchronous, large quantity asynchronous
 func (s *fileSink) flushDaemon() {
-	tick := time.NewTicker(30 * time.Second)
+	tick := time.NewTicker(3 * time.Second)
 	defer tick.Stop()
 	for {
+		if len(s.flushChan) < channelLimit {
+			sev := <-s.flushChan
+			s.flush(sev)
+		} else {
+			<-s.flushChan
+		}
 		select {
 		case <-tick.C:
 			s.Flush()
-		case sev := <-s.flushChan:
-			s.flush(sev)
 		}
 	}
 }
+
+//
+//func (s *fileSink) asyncFlush() {
+//	tick := time.NewTicker(30 * time.Second)
+//	defer tick.Stop()
+//	for {
+//		select {
+//		case <-tick.C:
+//			if len(s.flushChan) < groupSize {
+//				return
+//			}
+//		case sev := <-s.flushChan:
+//			s.flush(sev)
+//		}
+//	}
+//}
 
 // Flush flushes all pending log I/O.
 func Flush() {
@@ -342,7 +362,7 @@ func Flush() {
 
 // Flush flushes all the logs and attempts to "sync" their data to disk.
 func (s *fileSink) Flush() error {
-	return s.flush(logsink.Info)
+	return s.flush(logsink.Fatal)
 }
 
 // flush flushes all logs of severity threshold or greater.
@@ -358,7 +378,7 @@ func (s *fileSink) flush(threshold logsink.Severity) error {
 	}
 
 	// Flush from fatal down, in case there's trouble flushing.
-	for sev := logsink.Fatal; sev >= threshold; sev-- {
+	for sev := threshold; sev >= logsink.Info; sev-- {
 		file := s.file[sev]
 		if file != nil {
 			updateErr(file.Flush())
