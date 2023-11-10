@@ -7,6 +7,7 @@
 package configcenter
 
 import (
+	"errors"
 	"fmt"
 	"github.com/nacos-group/nacos-sdk-go/v2/clients"
 	"github.com/nacos-group/nacos-sdk-go/v2/clients/config_client"
@@ -26,16 +27,19 @@ var configMap = make(map[string]interface{}, 0)
 func LoadYamlConfig(namespaceId string, dataId string) error {
 	err := initConfigClient(namespaceId, dataId)
 	if err != nil {
-		return err
+		glog.Errorf("LoadYamlConfig fail - namespaceId:%s, dataId:%s, msg:%s", namespaceId, dataId, err.Error())
+		return errors.New("LoadYamlConfig fail")
 	}
 	content, err := configClient.GetConfig(vo.ConfigParam{
 		DataId: dataId,
 		Group:  "DEFAULT_GROUP",
 	})
 	if err != nil {
-		return err
+		glog.Errorf("LoadYamlConfig fail - namespaceId:%s, dataId:%s, msg:%s", namespaceId, dataId, err.Error())
+		return errors.New("LoadYamlConfig fail")
 	}
 	if content == "" {
+		glog.Warningf("LoadYamlConfig finish - namespaceId:%s, dataId:%s, msg:config is empty", namespaceId, dataId)
 		return nil
 	}
 
@@ -49,6 +53,7 @@ func LoadYamlConfig(namespaceId string, dataId string) error {
 	for k, v := range configMap {
 		glog.Infof("---  %s: %v", k, v)
 	}
+	glog.Infof("LoadYamlConfig finish - namespaceId:%s, dataId:%s", namespaceId, dataId)
 	return nil
 }
 
