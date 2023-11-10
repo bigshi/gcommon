@@ -6,11 +6,10 @@ package stackdump_test
 import (
 	"bytes"
 	"fmt"
+	"github.com/qionggemens/gcommon/internal/stackdump"
 	"regexp"
 	"runtime"
 	"testing"
-
-	"github.com/golang/glog/internal/stackdump"
 )
 
 var file string
