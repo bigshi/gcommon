@@ -15,8 +15,18 @@ import (
 	"time"
 )
 
+const maxBodyLen = 300
+
+func getBodyStr(body interface{}) string {
+	bodyStr := fmt.Sprintf("%+v", body)
+	if len(bodyStr) > maxBodyLen {
+		return bodyStr[:maxBodyLen]
+	}
+	return bodyStr
+}
+
 func GrpcInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	reqStr := fmt.Sprintf("%+v", req)[:500]
+	reqStr := getBodyStr(req)
 	defer func() {
 		if p := recover(); p != nil {
 			glog.Errorf("%s fail - req:%s, err:%v, stack:%s", info.FullMethod, reqStr, p, string(debug.Stack()))
@@ -28,7 +38,7 @@ func GrpcInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServe
 	if err != nil {
 		glog.Errorf("%s fail - cost:%dms, req:%s, msg:%s", time.Since(bt).Milliseconds(), reqStr, err.Error())
 	} else {
-		rspStr := fmt.Sprintf("%+v", rsp)[:500]
+		rspStr := getBodyStr(req)
 		glog.Infof("%s success - cost:%dms, req:%s, rsp:%s", time.Since(bt).Milliseconds(), reqStr, rspStr)
 	}
 	return rsp, err
