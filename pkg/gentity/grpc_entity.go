@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-func grpcInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+func GrpcInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	reqStr := fmt.Sprintf("%+v", req)[:500]
 	defer func() {
 		if p := recover(); p != nil {
