@@ -78,7 +78,7 @@ func GrpcClientInterceptor(ctx context.Context, method string, req, reply interf
 		glog.Errorf("[GRPC CLIENT] %s fail - cost:%dms, req:%s, msg:%s", method, time.Since(bt).Milliseconds(), reqStr, err.Error())
 	} else {
 		rspStr := getBodyStr(reply)
-		glog.Infof("[GRPC CLIENT] %s success - cost:%dms, req:%s", method, time.Since(bt).Milliseconds(), reqStr, rspStr)
+		glog.Infof("[GRPC CLIENT] %s success - cost:%dms, req:%s, rsp:%s", method, time.Since(bt).Milliseconds(), reqStr, rspStr)
 	}
 	return err
 }
