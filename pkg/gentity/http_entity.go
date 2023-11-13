@@ -77,15 +77,15 @@ type HandleInterceptor interface {
 func (pxy *HttpProxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	defer func() {
 		if e := recover(); e != nil {
-			glog.Errorf("process http request fail - path:%s, err:%v, stack:%s", req.URL.Path, e, string(debug.Stack()))
+			glog.Errorf("[HTTP ACCESS] handle fail - path:%s, err:%v, stack:%s", req.URL.Path, e, string(debug.Stack()))
 		}
 	}()
 	urlPath := req.URL.Path
-	glog.Infof("ACCESS req begin - path:%s", urlPath)
+	glog.Infof("[HTTP ACCESS] req begin - path:%s", urlPath)
 	bt := time.Now()
 	reqMapping, isOk := pxy.RequestMap[urlPath]
 	if !isOk {
-		glog.Errorf("ACCESS req end - msg:404, path:%s", req.URL.Path)
+		glog.Errorf("[HTTP ACCESS] req end - path:%s, msg:404", req.URL.Path)
 		rw.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -93,7 +93,7 @@ func (pxy *HttpProxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		interceptor := pxy.Interceptors[i]
 		isOk = interceptor.PreHandle(rw, req)
 		if !isOk {
-			glog.Errorf("ACCESS req end - msg:preHandle fail, path:%s, interceptor:%v", req.URL.Path, interceptor)
+			glog.Errorf("[HTTP ACCESS] req end - path:%s, interceptor:%v, msg:preHandle fail", req.URL.Path, interceptor)
 			return
 		}
 	}
@@ -102,5 +102,5 @@ func (pxy *HttpProxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		interceptor := pxy.Interceptors[i]
 		interceptor.PostHandle(rw, req)
 	}
-	glog.Infof("ACCESS req end - cost:%dms, path:%s", time.Since(bt).Milliseconds(), req.URL.Path)
+	glog.Infof("[HTTP ACCESS] req end - cost:%dms, path:%s", time.Since(bt).Milliseconds(), req.URL.Path)
 }

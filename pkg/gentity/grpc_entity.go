@@ -38,7 +38,7 @@ func GrpcInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServe
 	if err != nil {
 		glog.Errorf("[GRPC ACCESS] %s fail - cost:%dms, req:%s, msg:%s", info.FullMethod, time.Since(bt).Milliseconds(), reqStr, err.Error())
 	} else {
-		rspStr := getBodyStr(req)
+		rspStr := getBodyStr(rsp)
 		glog.Infof("[GRPC ACCESS] %s success - cost:%dms, req:%s, rsp:%s", info.FullMethod, time.Since(bt).Milliseconds(), reqStr, rspStr)
 	}
 	return rsp, err
