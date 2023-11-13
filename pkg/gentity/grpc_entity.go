@@ -29,17 +29,17 @@ func GrpcInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServe
 	reqStr := getBodyStr(req)
 	defer func() {
 		if p := recover(); p != nil {
-			glog.Errorf("%s fail - req:%s, err:%v, stack:%s", info.FullMethod, reqStr, p, string(debug.Stack()))
+			glog.Errorf("[GRPC ACCESS] %s fail - req:%s, err:%v, stack:%s", info.FullMethod, reqStr, p, string(debug.Stack()))
 		}
 	}()
-	glog.Infof("%s param - req:%s", reqStr)
+	glog.Infof("[GRPC ACCESS] %s param - req:%s", info.FullMethod, reqStr)
 	bt := time.Now()
 	rsp, err := handler(ctx, req)
 	if err != nil {
-		glog.Errorf("%s fail - cost:%dms, req:%s, msg:%s", time.Since(bt).Milliseconds(), reqStr, err.Error())
+		glog.Errorf("[GRPC ACCESS] %s fail - cost:%dms, req:%s, msg:%s", info.FullMethod, time.Since(bt).Milliseconds(), reqStr, err.Error())
 	} else {
 		rspStr := getBodyStr(req)
-		glog.Infof("%s success - cost:%dms, req:%s, rsp:%s", time.Since(bt).Milliseconds(), reqStr, rspStr)
+		glog.Infof("[GRPC ACCESS] %s success - cost:%dms, req:%s, rsp:%s", info.FullMethod, time.Since(bt).Milliseconds(), reqStr, rspStr)
 	}
 	return rsp, err
 }
