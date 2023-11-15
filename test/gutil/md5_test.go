@@ -10,8 +10,11 @@ import (
 	"fmt"
 	util "github.com/qionggemens/gcommon/pkg/gutil"
 	"testing"
+	"time"
 )
 
 func TestMd5(t *testing.T) {
 	fmt.Println(util.Md5("123"))
+	fmt.Println(time.Now().UnixMicro())
+	fmt.Println(time.Now().UnixNano())
 }
