@@ -30,34 +30,33 @@ func getBodyStr(body interface{}) string {
 	return bodyStr
 }
 
-func GetValueFromMD(md metadata.MD, key string) string {
-	arr := md.Get(key)
-	if nil == arr || len(arr) == 0 {
-		return ""
-	}
-	return arr[0]
-}
-
-func GetTraceIdOfClient(ctx context.Context) string {
+func GetTraceIdOfClient(ctx context.Context) (context.Context, string) {
 	// 拿上游的ctx
-	traceId := GetTraceIdOfServer(ctx)
-	if traceId == "" {
-		traceId = strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
+	md, exists := metadata.FromIncomingContext(ctx)
+	if !exists {
+		traceId := strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
+		return metadata.AppendToOutgoingContext(ctx, TraceId, traceId), traceId
 	}
-	metadata.AppendToOutgoingContext(ctx, TraceId, traceId)
-	return traceId
+	arr := md.Get(TraceId)
+	if arr == nil || len(arr) > 0 {
+		traceId := strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
+		return metadata.AppendToOutgoingContext(ctx, TraceId, traceId), traceId
+	}
+	traceId := arr[0]
+	return metadata.AppendToOutgoingContext(ctx, TraceId, traceId), traceId
 }
 
 func GetTraceIdOfServer(ctx context.Context) string {
 	// 拿上游的ctx
 	md, exists := metadata.FromIncomingContext(ctx)
-	if exists {
-		arr := md.Get(TraceId)
-		if nil != arr && len(arr) > 0 {
-			return arr[0]
-		}
+	if !exists {
+		return ""
 	}
-	return ""
+	arr := md.Get(TraceId)
+	if arr == nil || len(arr) > 0 {
+		return ""
+	}
+	return arr[0]
 }
 
 // GrpcServerInterceptor
@@ -102,7 +101,7 @@ func GrpcServerInterceptor(ctx context.Context, req interface{}, info *grpc.Unar
 //	@return error
 func GrpcClientInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	reqStr := getBodyStr(req)
-	traceId := GetTraceIdOfClient(ctx)
+	outCtx, traceId := GetTraceIdOfClient(ctx)
 	defer func() {
 		if p := recover(); p != nil {
 			glog.Errorf("[GRPC CLIENT] %s fail - traceId:%s, req:%s, err:%v, stack:%s", method, traceId, reqStr, p, string(debug.Stack()))
@@ -110,7 +109,7 @@ func GrpcClientInterceptor(ctx context.Context, method string, req, reply interf
 	}()
 	glog.Infof("[GRPC CLIENT] %s param - traceId:%s, req:%s", method, traceId, reqStr)
 	bt := time.Now()
-	err := invoker(ctx, method, req, reply, cc, opts...)
+	err := invoker(outCtx, method, req, reply, cc, opts...)
 	if err != nil {
 		glog.Errorf("[GRPC CLIENT] %s fail - traceId:%s, cost:%dms, req:%s, msg:%s", method, traceId, time.Since(bt).Milliseconds(), reqStr, err.Error())
 	} else {
