@@ -38,7 +38,7 @@ func GetTraceIdOfClient(ctx context.Context) (context.Context, string) {
 		return metadata.AppendToOutgoingContext(ctx, TraceId, traceId), traceId
 	}
 	arr := md.Get(TraceId)
-	if arr == nil || len(arr) > 0 {
+	if arr == nil || len(arr) == 0 {
 		traceId := strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
 		return metadata.AppendToOutgoingContext(ctx, TraceId, traceId), traceId
 	}
@@ -53,7 +53,7 @@ func GetTraceIdOfServer(ctx context.Context) string {
 		return ""
 	}
 	arr := md.Get(TraceId)
-	if arr == nil || len(arr) > 0 {
+	if arr == nil || len(arr) == 0 {
 		return ""
 	}
 	return arr[0]
