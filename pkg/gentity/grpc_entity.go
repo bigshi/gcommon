@@ -19,7 +19,12 @@ import (
 
 const (
 	maxBodyLen = 300
-	TraceId    = "trace-id"
+	traceId    = "trace-id"
+)
+const (
+	DomainId = "domain-id"
+	AppId    = "app-id"
+	UserId   = "user-id"
 )
 
 func getBodyStr(body interface{}) string {
@@ -30,29 +35,30 @@ func getBodyStr(body interface{}) string {
 	return bodyStr
 }
 
-func GetTraceIdOfClient(ctx context.Context) (context.Context, string) {
+func getTraceIdOfClient(ctx context.Context) (context.Context, string) {
 	// 拿上游的ctx
 	md, exists := metadata.FromIncomingContext(ctx)
 	if !exists {
 		traceId := strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
-		return metadata.AppendToOutgoingContext(ctx, TraceId, traceId), traceId
+		return metadata.AppendToOutgoingContext(ctx, traceId, traceId), traceId
 	}
-	arr := md.Get(TraceId)
+	out := metadata.NewOutgoingContext(ctx, md.Copy())
+	arr := md.Get(traceId)
 	if arr == nil || len(arr) == 0 {
 		traceId := strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
-		return metadata.AppendToOutgoingContext(ctx, TraceId, traceId), traceId
+		return metadata.AppendToOutgoingContext(out, traceId, traceId), traceId
 	}
 	traceId := arr[0]
-	return metadata.AppendToOutgoingContext(ctx, TraceId, traceId), traceId
+	return out, traceId
 }
 
-func GetTraceIdOfServer(ctx context.Context) string {
+func getTraceIdOfServer(ctx context.Context) string {
 	// 拿上游的ctx
 	md, exists := metadata.FromIncomingContext(ctx)
 	if !exists {
 		return ""
 	}
-	arr := md.Get(TraceId)
+	arr := md.Get(traceId)
 	if arr == nil || len(arr) == 0 {
 		return ""
 	}
@@ -70,7 +76,7 @@ func GetTraceIdOfServer(ctx context.Context) string {
 //	@return error
 func GrpcServerInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	reqStr := getBodyStr(req)
-	traceId := GetTraceIdOfServer(ctx)
+	traceId := getTraceIdOfServer(ctx)
 	defer func() {
 		if p := recover(); p != nil {
 			glog.Errorf("[GRPC SERVER] %s fail - traceId:%s, req:%s, err:%v, stack:%s", info.FullMethod, traceId, reqStr, p, string(debug.Stack()))
@@ -101,7 +107,7 @@ func GrpcServerInterceptor(ctx context.Context, req interface{}, info *grpc.Unar
 //	@return error
 func GrpcClientInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	reqStr := getBodyStr(req)
-	outCtx, traceId := GetTraceIdOfClient(ctx)
+	outCtx, traceId := getTraceIdOfClient(ctx)
 	defer func() {
 		if p := recover(); p != nil {
 			glog.Errorf("[GRPC CLIENT] %s fail - traceId:%s, req:%s, err:%v, stack:%s", method, traceId, reqStr, p, string(debug.Stack()))
@@ -117,4 +123,34 @@ func GrpcClientInterceptor(ctx context.Context, method string, req, reply interf
 		glog.Infof("[GRPC CLIENT] %s success - traceId:%s, cost:%dms, req:%s, rsp:%s", method, traceId, time.Since(bt).Milliseconds(), reqStr, rspStr)
 	}
 	return err
+}
+
+type GrpcHeader struct {
+	AppId    string
+	DomainId string
+	UserId   string
+}
+
+func ToGrpcHeader(ctx context.Context) *GrpcHeader {
+	md, exists := metadata.FromIncomingContext(ctx)
+	if !exists {
+		return &GrpcHeader{}
+	}
+	var domainId, appId, userId string
+
+	arr := md.Get(DomainId)
+	if arr != nil && len(arr) > 0 {
+		domainId = arr[0]
+	}
+
+	arr = md.Get(AppId)
+	if arr != nil && len(arr) > 0 {
+		appId = arr[0]
+	}
+
+	arr = md.Get(UserId)
+	if arr != nil && len(arr) > 0 {
+		userId = arr[0]
+	}
+	return &GrpcHeader{AppId: appId, DomainId: domainId, UserId: userId}
 }
