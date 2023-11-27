@@ -19,9 +19,9 @@ import (
 
 const (
 	maxBodyLen = 300
-	traceId    = "trace-id"
 )
 const (
+	TraceId  = "trace-id"
 	DomainId = "domain-id"
 	AppId    = "app-id"
 	UserId   = "user-id"
@@ -40,13 +40,13 @@ func getTraceIdOfClient(ctx context.Context) (context.Context, string) {
 	md, exists := metadata.FromIncomingContext(ctx)
 	if !exists {
 		traceId := strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
-		return metadata.AppendToOutgoingContext(ctx, traceId, traceId), traceId
+		return metadata.AppendToOutgoingContext(ctx, TraceId, traceId), traceId
 	}
 	out := metadata.NewOutgoingContext(ctx, md.Copy())
-	arr := md.Get(traceId)
+	arr := md.Get(TraceId)
 	if arr == nil || len(arr) == 0 {
 		traceId := strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
-		return metadata.AppendToOutgoingContext(out, traceId, traceId), traceId
+		return metadata.AppendToOutgoingContext(out, TraceId, traceId), traceId
 	}
 	traceId := arr[0]
 	return out, traceId
@@ -58,7 +58,7 @@ func getTraceIdOfServer(ctx context.Context) string {
 	if !exists {
 		return ""
 	}
-	arr := md.Get(traceId)
+	arr := md.Get(TraceId)
 	if arr == nil || len(arr) == 0 {
 		return ""
 	}
