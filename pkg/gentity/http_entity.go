@@ -62,8 +62,8 @@ func WriteFailResponse(rw http.ResponseWriter, msg string) {
 	io.WriteString(rw, string(NewFailResultBytes(msg)))
 }
 
-// HttpProxy http代理
-type HttpProxy struct {
+// HttpServer http
+type HttpServer struct {
 	Interceptors []HandleInterceptor
 	RequestMap   map[string]func(rw http.ResponseWriter, req *http.Request)
 }
@@ -74,7 +74,7 @@ type HandleInterceptor interface {
 	PostHandle(rw http.ResponseWriter, req *http.Request)
 }
 
-func (pxy *HttpProxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+func (pxy *HttpServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	defer func() {
 		if e := recover(); e != nil {
 			glog.Errorf("[HTTP ACCESS] handle fail - path:%s, err:%v, stack:%s", req.URL.Path, e, string(debug.Stack()))
