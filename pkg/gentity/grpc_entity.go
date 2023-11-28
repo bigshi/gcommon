@@ -21,10 +21,10 @@ const (
 	maxBodyLen = 300
 )
 const (
-	TraceId  = "trace-id"
-	DomainId = "domain-id"
-	AppId    = "app-id"
-	UserId   = "user-id"
+	MdKeyTraceId  = "trace-id"
+	MdKeyDomainId = "domain-id"
+	MdKeyAppId    = "app-id"
+	MdKeyUserId   = "user-id"
 )
 
 func getBodyStr(body interface{}) string {
@@ -40,13 +40,13 @@ func getTraceIdOfClient(ctx context.Context) (context.Context, string) {
 	md, exists := metadata.FromIncomingContext(ctx)
 	if !exists {
 		traceId := strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
-		return metadata.AppendToOutgoingContext(ctx, TraceId, traceId), traceId
+		return metadata.AppendToOutgoingContext(ctx, MdKeyTraceId, traceId), traceId
 	}
 	out := metadata.NewOutgoingContext(ctx, md.Copy())
-	arr := md.Get(TraceId)
+	arr := md.Get(MdKeyTraceId)
 	if arr == nil || len(arr) == 0 {
 		traceId := strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
-		return metadata.AppendToOutgoingContext(out, TraceId, traceId), traceId
+		return metadata.AppendToOutgoingContext(out, MdKeyTraceId, traceId), traceId
 	}
 	traceId := arr[0]
 	return out, traceId
@@ -58,7 +58,7 @@ func getTraceIdOfServer(ctx context.Context) string {
 	if !exists {
 		return ""
 	}
-	arr := md.Get(TraceId)
+	arr := md.Get(MdKeyTraceId)
 	if arr == nil || len(arr) == 0 {
 		return ""
 	}
@@ -125,32 +125,32 @@ func GrpcClientInterceptor(ctx context.Context, method string, req, reply interf
 	return err
 }
 
-type GrpcHeader struct {
+type ReqHeader struct {
 	AppId    string
 	DomainId string
 	UserId   string
 }
 
-func ToGrpcHeader(ctx context.Context) *GrpcHeader {
+func ToGrpcHeader(ctx context.Context) *ReqHeader {
 	md, exists := metadata.FromIncomingContext(ctx)
 	if !exists {
-		return &GrpcHeader{}
+		return &ReqHeader{}
 	}
 	var domainId, appId, userId string
 
-	arr := md.Get(DomainId)
+	arr := md.Get(MdKeyDomainId)
 	if arr != nil && len(arr) > 0 {
 		domainId = arr[0]
 	}
 
-	arr = md.Get(AppId)
+	arr = md.Get(MdKeyAppId)
 	if arr != nil && len(arr) > 0 {
 		appId = arr[0]
 	}
 
-	arr = md.Get(UserId)
+	arr = md.Get(MdKeyUserId)
 	if arr != nil && len(arr) > 0 {
 		userId = arr[0]
 	}
-	return &GrpcHeader{AppId: appId, DomainId: domainId, UserId: userId}
+	return &ReqHeader{AppId: appId, DomainId: domainId, UserId: userId}
 }

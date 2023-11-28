@@ -48,11 +48,13 @@ func LoadYamlConfig(namespaceId string, dataId string) error {
 	if err != nil {
 		return err
 	}
-	buildFlattenedMap(configMap, confMap, "")
+	resultMap := make(map[string]interface{}, 0)
+	buildFlattenedMap(resultMap, confMap, "")
 	glog.Infof("-------------------------- nacos config --------------------------")
-	for k, v := range configMap {
+	for k, v := range resultMap {
 		glog.Infof("---  %s: %v", k, v)
 	}
+	configMap = resultMap
 	glog.Infof("LoadYamlConfig finish - namespaceId:%s, dataId:%s", namespaceId, dataId)
 	return nil
 }
