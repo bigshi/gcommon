@@ -1,7 +1,6 @@
 package gutil
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/qionggemens/gcommon/pkg/gentity"
 	"strings"
@@ -70,46 +69,6 @@ func GetLimitSql(limitMap map[string]int32) string {
 		return fmt.Sprintf("limit %d", limit)
 	}
 	return ""
-}
-
-// Modify
-//
-//	@Description: 修改（编辑、删除）
-//	@param db
-//	@param sql
-//	@param args
-//	@return err
-//	@return id
-func Modify(db *sql.DB, sql string, args ...interface{}) (err error, id int64) {
-	result, err := db.Exec(sql, args...)
-	if err != nil {
-		return err, 0
-	}
-	affectedRows, err := result.RowsAffected()
-	if err != nil {
-		return err, 0
-	}
-	return nil, affectedRows
-}
-
-// ModifyTx
-//
-//	@Description: 修改（编辑、删除）- 事务
-//	@param tx
-//	@param sql
-//	@param args
-//	@return err
-//	@return id
-func ModifyTx(tx *sql.Tx, sql string, args ...interface{}) (err error, id int64) {
-	result, err := tx.Exec(sql, args...)
-	if err != nil {
-		return err, 0
-	}
-	affectedRows, err := result.RowsAffected()
-	if err != nil {
-		return err, 0
-	}
-	return nil, affectedRows
 }
 
 // GetSelectSql

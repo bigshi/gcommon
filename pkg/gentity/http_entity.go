@@ -80,12 +80,12 @@ type HandleInterceptor interface {
 }
 
 func (server *HttpServer) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	urlPath := req.URL.Path
 	defer func() {
 		if e := recover(); e != nil {
-			glog.Errorf("[HTTP ACCESS] handle fail - path:%s, err:%v, stack:%s", req.URL.Path, e, string(debug.Stack()))
+			glog.Errorf("[HTTP ACCESS] handle fail - path:%s, err:%v, stack:%s", urlPath, e, string(debug.Stack()))
 		}
 	}()
-	urlPath := req.URL.Path
 	glog.Infof("[HTTP ACCESS] req begin - path:%s", urlPath)
 	bt := time.Now()
 	reqMapping, isOk := server.RequestMap[urlPath]
