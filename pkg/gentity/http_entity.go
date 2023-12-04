@@ -17,6 +17,7 @@ import (
 
 const ErrorCode = 500
 const SuccessCode = 200
+
 const (
 	HeaderKeyDomainId = "Domain-Id"
 	HeaderKeyAppId    = "App-Id"
