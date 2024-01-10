@@ -8,6 +8,7 @@ package gentity
 
 import (
 	"context"
+	"github.com/qionggemens/gcommon/pkg/component"
 	"google.golang.org/grpc/metadata"
 	"net/http"
 )
@@ -17,7 +18,7 @@ func GetDomainIdFromCtx(ctx context.Context) string {
 	if !exists {
 		return ""
 	}
-	arr := md.Get(MdKeyDomainId)
+	arr := md.Get(component.MdKeyDomainId)
 	if arr != nil && len(arr) > 0 {
 		return arr[0]
 	}
@@ -29,7 +30,7 @@ func GetAppIdFromCtx(ctx context.Context) string {
 	if !exists {
 		return ""
 	}
-	arr := md.Get(MdKeyAppId)
+	arr := md.Get(component.MdKeyAppId)
 	if arr != nil && len(arr) > 0 {
 		return arr[0]
 	}
@@ -41,7 +42,7 @@ func GetUserIdFromCtx(ctx context.Context) string {
 	if !exists {
 		return ""
 	}
-	arr := md.Get(MdKeyUserId)
+	arr := md.Get(component.MdKeyUserId)
 	if arr != nil && len(arr) > 0 {
 		return arr[0]
 	}

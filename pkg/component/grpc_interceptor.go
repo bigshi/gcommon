@@ -4,7 +4,7 @@
  * Email: lcmusic1994@gmail.com
  */
 
-package gentity
+package component
 
 import (
 	"context"
