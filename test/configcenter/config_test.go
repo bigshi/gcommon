@@ -9,21 +9,21 @@ package configcenter
 import (
 	"fmt"
 	"github.com/golang/glog"
-	"github.com/qionggemens/gcommon/pkg/configcenter"
+	"github.com/qionggemens/gcommon/pkg/nacos"
 	"testing"
 	"time"
 )
 
 func TestGetBool(t *testing.T) {
-	fmt.Println(configcenter.GetBool("jwt.check.enabled", false))
+	fmt.Println(nacos.GetBool("jwt.check.enabled", false))
 }
 
 func TestGetString(t *testing.T) {
-	fmt.Println(configcenter.GetString("jwt.secret.app", ""))
+	fmt.Println(nacos.GetString("jwt.secret.app", ""))
 }
 
 func TestGetStrList(t *testing.T) {
-	fmt.Println(configcenter.GetStrList("spring.redis.cluster.nodes"))
+	fmt.Println(nacos.GetStrList("spring.redis.cluster.nodes"))
 	glog.Flush()
 	time.Sleep(30 * time.Second)
 }

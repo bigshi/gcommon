@@ -7,15 +7,15 @@
 package gmgr
 
 import (
-	"github.com/qionggemens/gcommon/pkg/configcenter"
+	"github.com/qionggemens/gcommon/pkg/nacos"
 	"github.com/redis/go-redis/v9"
 	"strings"
 )
 
 func NewRedis() (*redis.ClusterClient, error) {
-	redisAddr := configcenter.GetString("redis.addr", "")
-	redisPwd := configcenter.GetString("redis.pwd", "123456")
-	redisPoolSize := configcenter.GetInt("redis.pool.size", 10)
+	redisAddr := nacos.GetString("redis.addr", "")
+	redisPwd := nacos.GetString("redis.pwd", "123456")
+	redisPoolSize := nacos.GetInt("redis.pool.size", 10)
 	rdb := redis.NewClusterClient(&redis.ClusterOptions{
 		Addrs:    strings.Split(redisAddr, ","),
 		Password: redisPwd,

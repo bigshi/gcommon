@@ -8,8 +8,8 @@ package gmgr
 
 import (
 	"fmt"
-	"github.com/qionggemens/gcommon/pkg/configcenter"
 	"github.com/qionggemens/gcommon/pkg/glog"
+	"github.com/qionggemens/gcommon/pkg/nacos"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -17,11 +17,11 @@ import (
 )
 
 func NewDB(dbName string) (*gorm.DB, error) {
-	mysqlUrl := configcenter.GetString(fmt.Sprintf("db.%s.mysql_url", dbName), "")
+	mysqlUrl := nacos.GetString(fmt.Sprintf("db.%s.mysql_url", dbName), "")
 	// 最大和最小尽量相差很小，要不然会引起无限新开连接，直至端口号用完
-	maxOpenConns := configcenter.GetInt(fmt.Sprintf("db.%s.max_open_conns", dbName), 5)
-	minIdleConns := configcenter.GetInt(fmt.Sprintf("db.%s.min_idle_conns", dbName), 5)
-	maxLifeTime := configcenter.GetInt64(fmt.Sprintf("db.%s.max_life_time", dbName), 60)
+	maxOpenConns := nacos.GetInt(fmt.Sprintf("db.%s.max_open_conns", dbName), 5)
+	minIdleConns := nacos.GetInt(fmt.Sprintf("db.%s.min_idle_conns", dbName), 5)
+	maxLifeTime := nacos.GetInt64(fmt.Sprintf("db.%s.max_life_time", dbName), 60)
 
 	db, err := gorm.Open(mysql.New(mysql.Config{
 		DSN:                       mysqlUrl, // DSN data source name

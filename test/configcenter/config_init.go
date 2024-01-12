@@ -9,13 +9,13 @@ package configcenter
 import (
 	"flag"
 	"fmt"
-	"github.com/qionggemens/gcommon/pkg/configcenter"
+	"github.com/qionggemens/gcommon/pkg/nacos"
 	"os"
 )
 
 func init() {
 	flag.Set("log_dir", "/tmp/logs/adminside")
 	os.Setenv("NACOS_IP", "192.168.88.42")
-	err := configcenter.LoadYamlConfig("", "adminside.yaml")
+	err := nacos.LoadYamlConfig("", "adminside.yaml")
 	fmt.Println(err)
 }
