@@ -4,11 +4,12 @@
  * Email: lcmusic1994@gmail.com
  */
 
-package gentity
+package ghelper
 
 import (
 	"context"
-	"github.com/qionggemens/gcommon/pkg/component"
+	"github.com/qionggemens/gcommon/pkg/gcomponent"
+	"github.com/qionggemens/gcommon/pkg/gentity"
 	"google.golang.org/grpc/metadata"
 	"net/http"
 )
@@ -18,7 +19,7 @@ func GetDomainIdFromCtx(ctx context.Context) string {
 	if !exists {
 		return ""
 	}
-	arr := md.Get(component.MdKeyDomainId)
+	arr := md.Get(gcomponent.MdKeyDomainId)
 	if arr != nil && len(arr) > 0 {
 		return arr[0]
 	}
@@ -30,7 +31,7 @@ func GetAppIdFromCtx(ctx context.Context) string {
 	if !exists {
 		return ""
 	}
-	arr := md.Get(component.MdKeyAppId)
+	arr := md.Get(gcomponent.MdKeyAppId)
 	if arr != nil && len(arr) > 0 {
 		return arr[0]
 	}
@@ -42,7 +43,7 @@ func GetUserIdFromCtx(ctx context.Context) string {
 	if !exists {
 		return ""
 	}
-	arr := md.Get(component.MdKeyUserId)
+	arr := md.Get(gcomponent.MdKeyUserId)
 	if arr != nil && len(arr) > 0 {
 		return arr[0]
 	}
@@ -50,13 +51,13 @@ func GetUserIdFromCtx(ctx context.Context) string {
 }
 
 func GetDomainIdFromHeader(req *http.Request) string {
-	return req.Header.Get(HeaderKeyDomainId)
+	return req.Header.Get(gentity.HeaderKeyDomainId)
 }
 
 func GetAppIdFromHeader(req *http.Request) string {
-	return req.Header.Get(HeaderKeyAppId)
+	return req.Header.Get(gentity.HeaderKeyAppId)
 }
 
 func GetUserIdFromHeader(req *http.Request) string {
-	return req.Header.Get(HeaderKeyUserId)
+	return req.Header.Get(gentity.HeaderKeyUserId)
 }

@@ -1,31 +1,34 @@
 /**
- * Create Time:2023/5/19
+ * Create Time:2024/1/12
  * User: luchao
  * Email: lcmusic1994@gmail.com
  */
 
-package configcenter
+package nacos
 
 import (
 	"errors"
 	"fmt"
 	"github.com/nacos-group/nacos-sdk-go/v2/clients"
-	"github.com/nacos-group/nacos-sdk-go/v2/clients/config_client"
-	"github.com/nacos-group/nacos-sdk-go/v2/common/constant"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 	"github.com/qionggemens/gcommon/pkg/glog"
-	"github.com/qionggemens/gcommon/pkg/gutil"
 	"gopkg.in/yaml.v2"
 	"reflect"
 	"strconv"
 	"strings"
 )
 
-var configClient config_client.IConfigClient
 var configMap = make(map[string]interface{}, 0)
 
 func LoadYamlConfig(namespaceId string, dataId string) error {
-	err := initConfigClient(namespaceId, dataId)
+	cc := getClientConfig(namespaceId, dataId)
+	sc := getServerConfig()
+	configClient, err := clients.NewConfigClient(
+		vo.NacosClientParam{
+			ClientConfig:  cc,
+			ServerConfigs: sc,
+		},
+	)
 	if err != nil {
 		glog.Errorf("LoadYamlConfig fail - namespaceId:%s, dataId:%s, msg:%s", namespaceId, dataId, err.Error())
 		return errors.New("LoadYamlConfig fail")
@@ -54,60 +57,6 @@ func LoadYamlConfig(namespaceId string, dataId string) error {
 		glog.Infof("---  %s: %v", k, v)
 	}
 	glog.Infof("LoadYamlConfig finish - namespaceId:%s, dataId:%s", namespaceId, dataId)
-	return nil
-}
-
-// getClientConfig
-//
-//	@Description: 获取客户端配置
-//	@param namespaceId
-//	@param moduleId
-//	@return *constant.ClientConfig
-func getClientConfig(namespaceId string, dataId string) *constant.ClientConfig {
-	logDir := fmt.Sprintf("/tmp/nacos/log/%s/%s", namespaceId, dataId)
-	cacheDir := fmt.Sprintf("/tmp/nacos/cache/%s/%s", namespaceId, dataId)
-	return constant.NewClientConfig(
-		constant.WithNamespaceId(namespaceId),
-		constant.WithTimeoutMs(5000),
-		constant.WithNotLoadCacheAtStart(true),
-		constant.WithLogDir(logDir),
-		constant.WithCacheDir(cacheDir),
-		constant.WithLogLevel("debug"),
-	)
-}
-
-// getServerConfig
-//
-//	@Description: 获取服务端配置
-//	@return []constant.ServerConfig
-func getServerConfig() []constant.ServerConfig {
-	nacosAddr := gutil.GetNacosAddr()
-	addr := strings.Split(nacosAddr, ":")
-	port, _ := strconv.ParseUint(addr[1], 10, 64)
-	return []constant.ServerConfig{
-		*constant.NewServerConfig(addr[0], port),
-	}
-}
-
-// initConfigClient
-//
-//	@Description: 初始化nacos客户端
-//	@param namespaceId
-//	@param moduleId
-//	@return error
-func initConfigClient(namespaceId string, dataId string) error {
-	cc := getClientConfig(namespaceId, dataId)
-	sc := getServerConfig()
-	client, err := clients.NewConfigClient(
-		vo.NacosClientParam{
-			ClientConfig:  cc,
-			ServerConfigs: sc,
-		},
-	)
-	if err != nil {
-		return err
-	}
-	configClient = client
 	return nil
 }
 
@@ -155,4 +104,114 @@ func buildFlattenedMap(result map[string]interface{}, source map[string]interfac
 			}
 		}
 	}
+}
+
+// GetBool
+//
+//	@Description: 获取bool值
+//	@param key
+//	@return bool
+func GetBool(key string, defValue bool) bool {
+	value, ok := configMap[key]
+	if !ok {
+		return defValue
+	}
+	val, isOk := value.(bool)
+	if isOk {
+		return val
+	}
+	return defValue
+}
+
+// GetString
+//
+//	@Description: 获取字符串值
+//	@param key
+//	@return string
+func GetString(key string, defValue string) string {
+	value, isOk := configMap[key]
+	if !isOk {
+		return defValue
+	}
+	val, isOk := value.(string)
+	if isOk {
+		return val
+	}
+	return defValue
+}
+
+// GetStrList
+//
+//	@Description: 获取字符串数组
+//	@param key
+//	@return []string
+func GetStrList(key string) []string {
+	result := make([]string, 0)
+	i := int64(0)
+	for true {
+		k := fmt.Sprintf("%s[%s]", key, strconv.FormatInt(i, 10))
+		value, isOk := configMap[k]
+		if !isOk {
+			break
+		}
+		val, isOk := value.(string)
+		if isOk {
+			result = append(result, val)
+		} else {
+			break
+		}
+		i++
+	}
+	return result
+}
+
+// GetInt
+//
+//	@Description:
+//	@param key
+//	@return int
+func GetInt(key string, defValue int) int {
+	value, isOk := configMap[key]
+	if !isOk {
+		return defValue
+	}
+	val, isOk := value.(int)
+	if isOk {
+		return val
+	}
+	return defValue
+}
+
+// GetInt32
+//
+//	@Description:
+//	@param key
+//	@return int32
+func GetInt32(key string, defValue int32) int32 {
+	value, isOk := configMap[key]
+	if !isOk {
+		return defValue
+	}
+	val, isOk := value.(int32)
+	if isOk {
+		return val
+	}
+	return defValue
+}
+
+// GetInt64
+//
+//	@Description:
+//	@param key
+//	@return int64
+func GetInt64(key string, defValue int64) int64 {
+	value, isOk := configMap[key]
+	if !isOk {
+		return defValue
+	}
+	val, isOk := value.(int64)
+	if isOk {
+		return val
+	}
+	return defValue
 }

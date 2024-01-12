@@ -4,11 +4,14 @@
  * Email: lcmusic1994@gmail.com
  */
 
-package component
+package gcomponent
 
 import (
 	"errors"
 	"fmt"
+	"github.com/qionggemens/gcommon/pkg/gutil"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -118,4 +121,22 @@ func NewSnowFlake(workerId int64, datacenterId int64) (*SnowFlake, error) {
 	mySnow.datacenterId = datacenterId
 
 	return mySnow, nil
+}
+
+func NewEasySnowFlake() (*SnowFlake, error) {
+	ip4, err := gutil.GetLocalIpx(4)
+	if err != nil {
+		return nil, err
+	}
+	strArr := strings.Split(ip4, ".")
+	if len(strArr) < 4 {
+		return nil, errors.New(fmt.Sprintf("ip4 is invalid [%s]", ip4))
+	}
+	a, _ := strconv.ParseInt(strArr[0], 10, 64)
+	b, _ := strconv.ParseInt(strArr[1], 10, 64)
+	c, _ := strconv.ParseInt(strArr[2], 10, 64)
+	d, _ := strconv.ParseInt(strArr[3], 10, 64)
+	m := a*1000 + b
+	n := c*1000 + d
+	return NewSnowFlake(n%32, m%32)
 }
