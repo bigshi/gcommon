@@ -40,6 +40,8 @@ func getClientConfig(namespaceId string, dataId string) *constant.ClientConfig {
 		constant.WithLogDir(logDir),
 		constant.WithCacheDir(cacheDir),
 		constant.WithLogLevel("debug"),
+		constant.WithUsername(gutil.GetNacosUsername()),
+		constant.WithPassword(gutil.GetNacosPassword()),
 	)
 	return clientCfg
 }

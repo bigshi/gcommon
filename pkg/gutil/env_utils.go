@@ -22,3 +22,27 @@ func GetNacosAddr() string {
 	}
 	return strings.Trim(tmp, " ")
 }
+
+// GetNacosUsername
+//
+//	@Description: 获取nacos客户端账号
+//	@return string
+func GetNacosUsername() string {
+	tmp := os.Getenv("NACOS_USERNAME")
+	if tmp == "" {
+		return "nacos"
+	}
+	return strings.Trim(tmp, " ")
+}
+
+// GetNacosPassword
+//
+//	@Description:获取nacos客户端密码
+//	@return string
+func GetNacosPassword() string {
+	tmp := os.Getenv("NACOS_PASSWORD")
+	if tmp == "" {
+		return "nacos"
+	}
+	return strings.Trim(tmp, " ")
+}
