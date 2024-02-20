@@ -9,6 +9,7 @@ package gcomponent
 import (
 	"errors"
 	"fmt"
+	"github.com/qionggemens/gcommon/pkg/glog"
 	"github.com/qionggemens/gcommon/pkg/gutil"
 	"strconv"
 	"strings"
@@ -73,7 +74,9 @@ func (s *SnowFlake) NextId() (int64, error) {
 	nowTimestamp := s.timeGen() //获取当前的毫秒级别的时间戳
 	if nowTimestamp < s.lastTimestamp {
 		//系统时钟倒退,倒退了s.lastTimestamp-nowTimestamp
-		return -1, errors.New(fmt.Sprintf("clock moved backwards, Refusing to generate id for %d milliseconds", s.lastTimestamp-nowTimestamp))
+		errMsg := fmt.Sprintf("clock moved backwards, Refusing to generate id for %d milliseconds", s.lastTimestamp-nowTimestamp)
+		glog.Errorf("NextId fail - msg:%s", errMsg)
+		return -1, errors.New(errMsg)
 	}
 	if nowTimestamp == s.lastTimestamp {
 		s.sequence = (s.sequence + 1) & s.maxSequence
