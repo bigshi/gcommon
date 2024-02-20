@@ -8,8 +8,6 @@ package gentity
 
 import (
 	"encoding/json"
-	"io"
-	"net/http"
 )
 
 const ErrorCode = 500
@@ -49,12 +47,4 @@ func NewFailResult(msg string) ApiResult {
 func NewFailResultBytes(msg string) []byte {
 	bytes, _ := json.Marshal(NewFailResult(msg))
 	return bytes
-}
-
-func WriteOkResponse(rw http.ResponseWriter, data interface{}, msg string) {
-	io.WriteString(rw, string(NewOkResultBytes(data, msg)))
-}
-
-func WriteFailResponse(rw http.ResponseWriter, msg string) {
-	io.WriteString(rw, string(NewFailResultBytes(msg)))
 }
