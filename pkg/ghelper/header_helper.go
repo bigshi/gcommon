@@ -14,24 +14,24 @@ import (
 	"net/http"
 )
 
-func GetDomainIdFromCtx(ctx context.Context) string {
+func GetDomainCodeFromCtx(ctx context.Context) string {
 	md, exists := metadata.FromIncomingContext(ctx)
 	if !exists {
 		return ""
 	}
-	arr := md.Get(gcomponent.MdKeyDomainId)
+	arr := md.Get(gcomponent.MdKeyDomainCode)
 	if arr != nil && len(arr) > 0 {
 		return arr[0]
 	}
 	return ""
 }
 
-func GetAppIdFromCtx(ctx context.Context) string {
+func GetAppCodeFromCtx(ctx context.Context) string {
 	md, exists := metadata.FromIncomingContext(ctx)
 	if !exists {
 		return ""
 	}
-	arr := md.Get(gcomponent.MdKeyAppId)
+	arr := md.Get(gcomponent.MdKeyAppCode)
 	if arr != nil && len(arr) > 0 {
 		return arr[0]
 	}
@@ -50,11 +50,11 @@ func GetUserIdFromCtx(ctx context.Context) string {
 	return ""
 }
 
-func GetDomainIdFromHeader(req *http.Request) string {
+func GetDomainCodeFromHeader(req *http.Request) string {
 	return req.Header.Get(gentity.HeaderKeyDomainId)
 }
 
-func GetAppIdFromHeader(req *http.Request) string {
+func GetAppCodeFromHeader(req *http.Request) string {
 	return req.Header.Get(gentity.HeaderKeyAppId)
 }
 

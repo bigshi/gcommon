@@ -23,10 +23,10 @@ const (
 	maxBodyLen = 512
 )
 const (
-	MdKeyTraceId  = "trace-id"
-	MdKeyDomainId = "domain-id"
-	MdKeyAppId    = "app-id"
-	MdKeyUserId   = "user-id"
+	MdKeyTraceId    = "trace-id"
+	MdKeyDomainCode = "domain-code"
+	MdKeyAppCode    = "app-code"
+	MdKeyUserId     = "user-id"
 )
 
 func getBodyStr(body interface{}) string {
