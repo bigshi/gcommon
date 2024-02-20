@@ -9,6 +9,7 @@ package gcomponent
 import (
 	"context"
 	"fmt"
+	"github.com/qionggemens/gcommon/pkg/gentity"
 	"github.com/qionggemens/gcommon/pkg/glog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -21,12 +22,6 @@ import (
 
 const (
 	maxBodyLen = 512
-)
-const (
-	MdKeyTraceId    = "trace-id"
-	MdKeyDomainCode = "domain-code"
-	MdKeyAppCode    = "app-code"
-	MdKeyUserId     = "user-id"
 )
 
 func getBodyStr(body interface{}) string {
@@ -42,17 +37,17 @@ func getMdOfClient(ctx context.Context) (context.Context, metadata.MD) {
 	md, exists := metadata.FromIncomingContext(ctx)
 	if !exists {
 		traceId := strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
-		return metadata.AppendToOutgoingContext(ctx, MdKeyTraceId, traceId), metadata.Pairs(MdKeyTraceId, traceId)
+		return metadata.AppendToOutgoingContext(ctx, gentity.MdKeyTraceId, traceId), metadata.Pairs(gentity.MdKeyTraceId, traceId)
 	}
 	out := metadata.NewOutgoingContext(ctx, md.Copy())
-	arr := md.Get(MdKeyTraceId)
+	arr := md.Get(gentity.MdKeyTraceId)
 	if arr == nil || len(arr) == 0 {
 		traceId := strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
-		md.Append(MdKeyTraceId, traceId)
-		return metadata.AppendToOutgoingContext(out, MdKeyTraceId, traceId), md
+		md.Append(gentity.MdKeyTraceId, traceId)
+		return metadata.AppendToOutgoingContext(out, gentity.MdKeyTraceId, traceId), md
 	}
 	traceId := arr[0]
-	md.Append(MdKeyTraceId, traceId)
+	md.Append(gentity.MdKeyTraceId, traceId)
 	return out, md
 }
 
@@ -62,9 +57,9 @@ func getMdOfServer(ctx context.Context) metadata.MD {
 	if !exists {
 		return metadata.MD{}
 	}
-	arr := md.Get(MdKeyTraceId)
+	arr := md.Get(gentity.MdKeyTraceId)
 	if arr == nil || len(arr) == 0 {
-		md.Append(MdKeyTraceId, "")
+		md.Append(gentity.MdKeyTraceId, "")
 	}
 	return md
 }
