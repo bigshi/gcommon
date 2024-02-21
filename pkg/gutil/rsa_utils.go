@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
+	"github.com/qionggemens/gcommon/pkg/glog"
 )
 
 // RSAEncrypt
@@ -65,7 +66,8 @@ func RSAGenerate(bits int) ([]byte, []byte, error) {
 	//Reader是一个全局、共享的密码用强随机数生成器
 	privateKey, err := rsa.GenerateKey(rand.Reader, bits)
 	if err != nil {
-		return nil, nil, err
+		glog.Errorf("RSAGenerate fail - msg:%s", err.Error())
+		return nil, nil, errors.New("rsa generate fail")
 	}
 	//通过x509标准将得到的ras私钥序列化为ASN.1 的 DER编码字符串
 	X509PrivateKey := x509.MarshalPKCS1PrivateKey(privateKey)
@@ -73,6 +75,7 @@ func RSAGenerate(bits int) ([]byte, []byte, error) {
 	privateBlock := pem.Block{Type: "RSA Private Key", Bytes: X509PrivateKey}
 	prk := pem.EncodeToMemory(&privateBlock)
 	if prk == nil {
+		glog.Errorf("RSAGenerate fail - msg:generate private key fail")
 		return nil, nil, errors.New("generate private key fail")
 	}
 	//获取公钥的数据
@@ -80,13 +83,15 @@ func RSAGenerate(bits int) ([]byte, []byte, error) {
 	//X509对公钥编码
 	X509PublicKey, err := x509.MarshalPKIXPublicKey(&publicKey)
 	if err != nil {
-		return nil, nil, err
+		glog.Errorf("RSAGenerate fail - msg:%s", err.Error())
+		return nil, nil, errors.New("rsa generate fail")
 	}
 	//创建一个pem.Block结构体对象
 	publicBlock := pem.Block{Type: "RSA Public Key", Bytes: X509PublicKey}
 	//保存到文件
 	puk := pem.EncodeToMemory(&publicBlock)
 	if prk == nil {
+		glog.Errorf("RSAGenerate fail - msg:generate public key fail")
 		return nil, nil, errors.New("generate public key fail")
 	}
 	return prk, puk, nil
