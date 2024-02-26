@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	maxBodyLen = 512
+	maxBodyLen = 1024
 )
 
 func getBodyStr(body interface{}) string {

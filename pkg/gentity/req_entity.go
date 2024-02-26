@@ -17,10 +17,12 @@ const (
 	MdKeyDomainCode = "domain-code"
 	MdKeyAppCode    = "app-code"
 	MdKeyUserId     = "user-id"
+	MdKeySourceIp   = "source-ip"
 )
 
 type ReqHeader struct {
 	DomainCode string
 	AppCode    string
 	UserId     string
+	SourceIp   string
 }

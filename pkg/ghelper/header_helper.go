@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func GetMdValueFromCtx(ctx context.Context, mdKey string) string {
@@ -31,14 +32,33 @@ func ToReqHeaderFromCtx(ctx context.Context) *gentity.ReqHeader {
 		DomainCode: GetMdValueFromCtx(ctx, gentity.MdKeyDomainCode),
 		AppCode:    GetMdValueFromCtx(ctx, gentity.MdKeyAppCode),
 		UserId:     GetMdValueFromCtx(ctx, gentity.MdKeyUserId),
+		SourceIp:   GetMdValueFromCtx(ctx, gentity.MdKeySourceIp),
 	}
 }
 
 func ToReqHeaderFromReq(req *http.Request) *gentity.ReqHeader {
+	// 来源IP
+	sourceIps := req.Header.Get("x-forwarded-for")
+	if sourceIps == "" {
+		sourceIps = req.Header.Get("Proxy-Client-IP")
+	}
+	if sourceIps == "" {
+		sourceIps = req.Header.Get("WL-Proxy-Client-IP")
+	}
+	if sourceIps == "" {
+		sourceIps = req.Header.Get("HTTP_CLIENT_IP")
+	}
+	if sourceIps == "" {
+		sourceIps = req.Header.Get("HTTP_X_FORWARDED_FOR")
+	}
+	if sourceIps == "" {
+		sourceIps = req.RemoteAddr
+	}
 	return &gentity.ReqHeader{
 		DomainCode: req.Header.Get(gentity.HeaderKeyDomainCode),
 		AppCode:    req.Header.Get(gentity.HeaderKeyAppCode),
 		UserId:     req.Header.Get(gentity.HeaderKeyUserId),
+		SourceIp:   strings.Split(sourceIps, ",")[0],
 	}
 }
 
