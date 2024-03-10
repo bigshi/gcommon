@@ -33,22 +33,27 @@ func getBodyStr(body interface{}) string {
 }
 
 func getMdOfClient(ctx context.Context) (context.Context, metadata.MD) {
-	// 拿上游的ctx
+	// 拿上游的ctx traceId
 	md, exists := metadata.FromIncomingContext(ctx)
+	var traceId string
 	if !exists {
-		traceId := strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
-		return metadata.AppendToOutgoingContext(ctx, gentity.MdKeyTraceId, traceId), metadata.Pairs(gentity.MdKeyTraceId, traceId)
+		traceId = strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
+	} else {
+		arr := md.Get(gentity.MdKeyTraceId)
+		if arr == nil || len(arr) == 0 {
+			traceId = strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
+		} else {
+			traceId = arr[0]
+		}
 	}
-	out := metadata.NewOutgoingContext(ctx, md.Copy())
-	arr := md.Get(gentity.MdKeyTraceId)
-	if arr == nil || len(arr) == 0 {
-		traceId := strconv.FormatInt(time.Now().UnixMicro(), 10)[4:]
-		md.Append(gentity.MdKeyTraceId, traceId)
-		return metadata.AppendToOutgoingContext(out, gentity.MdKeyTraceId, traceId), md
+
+	outMd, exists := metadata.FromOutgoingContext(ctx)
+	if !exists {
+		outMd = metadata.Pairs(gentity.MdKeyTraceId, traceId)
+		return metadata.NewOutgoingContext(ctx, outMd), outMd
 	}
-	traceId := arr[0]
-	md.Append(gentity.MdKeyTraceId, traceId)
-	return out, md
+	outMd.Append(gentity.MdKeyTraceId, traceId)
+	return metadata.AppendToOutgoingContext(ctx, gentity.MdKeyTraceId, traceId), outMd
 }
 
 func getMdOfServer(ctx context.Context) metadata.MD {
