@@ -11,10 +11,9 @@ import (
 	"fmt"
 	"github.com/qionggemens/gcommon/pkg/gentity"
 	"github.com/qionggemens/gcommon/pkg/glog"
+	util "github.com/qionggemens/gcommon/pkg/gutil"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/peer"
-	"net"
 	"runtime/debug"
 	"strconv"
 	"time"
@@ -69,17 +68,6 @@ func getMdOfServer(ctx context.Context) metadata.MD {
 	return md
 }
 
-func getAddr(ctx context.Context) string {
-	p, ok := peer.FromContext(ctx)
-	if !ok {
-		return ""
-	}
-	if p.Addr == net.Addr(nil) {
-		return ""
-	}
-	return p.Addr.String()
-}
-
 // GrpcServerInterceptor
 //
 //	@Description: 服务端拦截器
@@ -91,7 +79,7 @@ func getAddr(ctx context.Context) string {
 //	@return error
 func GrpcServerInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	reqStr := getBodyStr(req)
-	clientAddr := getAddr(ctx)
+	clientAddr := util.GetGrpcClientAddr(ctx)
 	md := getMdOfServer(ctx)
 	defer func() {
 		if p := recover(); p != nil {
@@ -123,7 +111,7 @@ func GrpcServerInterceptor(ctx context.Context, req interface{}, info *grpc.Unar
 //	@return error
 func GrpcClientInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	reqStr := getBodyStr(req)
-	serverAddr := getAddr(ctx)
+	serverAddr := util.GetGrpcClientAddr(ctx)
 	outCtx, md := getMdOfClient(ctx)
 	defer func() {
 		if p := recover(); p != nil {

@@ -7,7 +7,10 @@
 package gutil
 
 import (
+	"context"
 	"errors"
+	"github.com/qionggemens/gcommon/pkg/glog"
+	"google.golang.org/grpc/peer"
 	"net"
 	"strings"
 )
@@ -21,7 +24,8 @@ import (
 func GetLocalIpx(x int8) (string, error) {
 	interfaces, err := net.Interfaces()
 	if err != nil {
-		return "", err
+		glog.Errorf("GetLocalIpx fail - msg:%s", err.Error())
+		return "", errors.New("获取本地IP失败")
 	}
 	for _, ifs := range interfaces {
 		if !strings.HasPrefix(ifs.Name, "en") && !strings.HasPrefix(ifs.Name, "eth") {
@@ -30,6 +34,7 @@ func GetLocalIpx(x int8) (string, error) {
 
 		addrs, err := ifs.Addrs()
 		if err != nil {
+			glog.Errorf("GetLocalIpx fail - msg:%s", err.Error())
 			return "", err
 		}
 		for _, addr := range addrs {
@@ -46,4 +51,15 @@ func GetLocalIpx(x int8) (string, error) {
 		}
 	}
 	return "", errors.New("net interfaces not match")
+}
+
+func GetGrpcClientAddr(ctx context.Context) string {
+	p, ok := peer.FromContext(ctx)
+	if !ok {
+		return ""
+	}
+	if p.Addr == net.Addr(nil) {
+		return ""
+	}
+	return p.Addr.String()
 }
